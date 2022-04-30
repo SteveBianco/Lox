@@ -29,11 +29,11 @@ void runFile(std::string fileName)
 
     auto start = std::istreambuf_iterator<char>(fs);
     auto end = std::istreambuf_iterator<char>();
-    std::string program(start, end);
+    std::string source(start, end);
 
     // execute the program
     Lox lox;
-    lox.run(program);
+    lox.run(source);
 }
 
 int main(int argc, char* argv[])

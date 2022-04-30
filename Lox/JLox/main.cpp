@@ -5,9 +5,16 @@
 #include <fstream>
 #include <sstream>
 
+struct ErrorCodes
+{
+    const static int OK = 0;
+    const static int InternalError = 64;
+    const static int InvalidArgument = 65;
+};
+
 // Executes Lox statements entered at the command prompt,
 // i.e. runs a REPL.
-void runPrompt()
+int runPrompt()
 {
     Lox lox;
 
@@ -16,13 +23,21 @@ void runPrompt()
 
     while (std::getline(std::cin, line))
     {
+        // execute the last line entered
         lox.run(line);
+
+        //TODO how to report errors
+        lox.clearErrors();
+
+        // prompt for next line
         std::cout << "> ";
     }
+
+    return ErrorCodes::OK;
 }
 
 // Runs a Lox program from the specified file.
-void runFile(std::string fileName)
+int runFile(std::string fileName)
 {
     // read the file contents into a string
     std::ifstream fs{ fileName };
@@ -33,7 +48,18 @@ void runFile(std::string fileName)
 
     // execute the program
     Lox lox;
-    lox.run(source);
+    lox.run(source); 
+
+    if (lox.hadError())
+    {
+        for (const auto& error : lox.errors())
+        {
+            std::cerr << error << "\n";
+            return ErrorCodes::InternalError;
+        }
+    }
+
+    return ErrorCodes::OK;
 }
 
 int main(int argc, char* argv[])
@@ -44,14 +70,14 @@ int main(int argc, char* argv[])
     }
     else if (argc == 2)
     {
-        runFile(argv[1]);
+        return runFile(argv[1]);
     }
     else
     {
         //TODO need a better usage message
         std::cerr << "Usage: jlox <path to script>\n";
-        return 64;
+        return ErrorCodes::InvalidArgument;
     }
 
-    return 0;
+    return ErrorCodes::OK;
 }

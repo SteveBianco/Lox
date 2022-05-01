@@ -1,6 +1,8 @@
 #include "Scanner.h"
 #include "Token.h"
 
+#include <cctype>
+
 Scanner::Scanner(const std::string& source):
 	source_{source}
 {
@@ -30,6 +32,11 @@ bool Scanner::isAtEnd() const
 char Scanner::advance()
 {
 	return source_[current_++];
+}
+
+char Scanner::peek() const
+{
+	return source_[current_];
 }
 
 bool Scanner::match(char expected)
@@ -65,6 +72,29 @@ void Scanner::addLiteralToken(const std::string& str)
 	tokens_.emplace_back(new Token(getLexeme(), str, line_));
 }
 
+void Scanner::string()
+{
+	// We have already seen the opening '"'.
+	// Eat everything up to and including the closing '"'.
+	while (peek() != '"' && !isAtEnd())
+	{
+		if (peek() == '\n')
+			line_++;
+		advance();
+	}
+
+	if (isAtEnd())
+	{
+		//TODO Error: unterminated string
+	}
+
+	// eat the closing '"'
+	advance();
+
+	std::string str = source_.substr(start_ + 1, current_ - 1);
+	addLiteralToken(str);
+}
+
 void Scanner::scanToken()
 {
 	const char c = advance();
@@ -96,5 +126,34 @@ void Scanner::scanToken()
 	case '>':
 		addToken(match('=') ? TokenType::GREATER_EQUAL : TokenType::GREATER);
 		break;
+
+	case '/':
+		if (match('/'))
+		{
+			// it's a double slash which starts a comment. 
+			// Eat all chars till end of line, leaving the new line
+			while (peek() != '\n' && !isAtEnd())
+			{
+				advance();
+			}
+		}
+		else
+		{
+			// its just a slash
+			addToken(TokenType::SLASH);
+		}
+		break;
+
+	case '"': string(); break;
+
+	// Encountered new line.
+	case '\n': line_++; break;
+
+	}
+
+	// Ignore white space
+	if (!std::isspace(c))
+	{
+		//TODO Error: unexpected character
 	}
 }

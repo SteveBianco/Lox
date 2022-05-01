@@ -25,10 +25,12 @@ public:
 private:
 	bool isAtEnd() const;
 	char advance();
+	char peek() const;
 	bool match(char expected);
 	std::string getLexeme() const;
 
 	void scanToken();
+	void string();
 	void addToken(TokenType type);
 	void addLiteralToken(double number);
 	void addLiteralToken(const std::string& str);

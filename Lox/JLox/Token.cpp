@@ -42,8 +42,25 @@ double Token::getNumericLiteral() const
 	return std::get<double>(literal_);
 }
 
+namespace
+{
+	struct LiteralToString
+	{
+		std::string operator() (double x) const
+		{
+			return std::to_string(x);
+		}
+
+		std::string operator() (const std::string& str) const
+		{
+			return str;
+		}
+	};
+}
+
 Token::operator std::string() const
 {
-	// TODO include type and literal value (if any)
-	return lexeme_;
+	return to_string(type_) + " " 
+		+ lexeme_ + " " 
+		+ std::visit(LiteralToString{}, literal_);
 }

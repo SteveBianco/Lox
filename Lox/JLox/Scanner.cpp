@@ -32,6 +32,19 @@ char Scanner::advance()
 	return source_[current_++];
 }
 
+bool Scanner::match(char expected)
+{
+	if (isAtEnd())
+		return false;
+
+	if (source_[current_] != expected)
+		return false;
+
+	// Eat the character
+	advance();
+	return true;
+}
+
 std::string Scanner::getLexeme() const
 {
 	return source_.substr(start_, current_);
@@ -69,5 +82,19 @@ void Scanner::scanToken()
 	case '+': addToken(TokenType::PLUS); break;
 	case ';': addToken(TokenType::SEMICOLON); break;
 	case '*': addToken(TokenType::STAR); break;
+
+	// Handle tokens that could be single or two characters
+	case '!':
+		addToken(match('=') ? TokenType::BANG_EQUAL : TokenType::BANG);
+		break;
+	case '=':
+		addToken(match('=') ? TokenType::EQUAL_EQUAL : TokenType::EQUAL);
+		break;
+	case '<':
+		addToken(match('=') ? TokenType::LESS_EQUAL : TokenType::LESS);
+		break;
+	case '>':
+		addToken(match('=') ? TokenType::GREATER_EQUAL : TokenType::GREATER);
+		break;
 	}
 }

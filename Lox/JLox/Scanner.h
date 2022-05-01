@@ -25,6 +25,7 @@ public:
 private:
 	bool isAtEnd() const;
 	char advance();
+	bool match(char expected);
 	std::string getLexeme() const;
 
 	void scanToken();

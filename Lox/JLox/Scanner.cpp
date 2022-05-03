@@ -39,6 +39,14 @@ char Scanner::peek() const
 	return source_[current_];
 }
 
+char Scanner::peekNext() const
+{
+	if (current_ + 1 >= source_.size())
+		return '\0';
+
+	return source_[current_ + 1];
+}
+
 bool Scanner::match(char expected)
 {
 	if (isAtEnd())
@@ -95,6 +103,28 @@ void Scanner::string()
 	addLiteralToken(str);
 }
 
+void Scanner::number()
+{
+	while (std::isdigit(peek()))
+	{
+		advance();
+	}
+
+	if (peek() == '.' && std::isdigit(peekNext()))
+	{
+		// consume the decimal point
+		advance();
+
+		while (std::isdigit(peek()))
+		{
+			advance();
+		}
+	}
+
+	std::string numberStr = source_.substr(start_, current_);
+	addLiteralToken(std::stod(numberStr));
+}
+
 void Scanner::scanToken()
 {
 	const char c = advance();
@@ -149,6 +179,11 @@ void Scanner::scanToken()
 	// Encountered new line.
 	case '\n': line_++; break;
 
+	}
+
+	if (std::isdigit(c))
+	{
+		number();
 	}
 
 	// Ignore white space

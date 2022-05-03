@@ -158,6 +158,7 @@
     <ClCompile Include="TokenType.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ErrorRecorder.h" />
     <ClInclude Include="Lox.h" />
     <ClInclude Include="Scanner.h" />
     <ClInclude Include="Token.h" />

@@ -6,10 +6,13 @@
 #include <memory>
 
 class Token;
+struct ErrorRecorder;
 
 class Scanner
 {
 	const std::string& source_;
+	ErrorRecorder& errorRecorder_;
+
 	std::vector<std::shared_ptr<Token>> tokens_;
 
 	int start_ = 0;
@@ -17,7 +20,7 @@ class Scanner
 	int line_ = 0;
 
 public:
-	Scanner(const std::string& source);
+	Scanner(const std::string& source, ErrorRecorder& errorRecorder);
 	~Scanner();
 
 	const std::vector<std::shared_ptr<Token>>& scan();

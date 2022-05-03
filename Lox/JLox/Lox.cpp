@@ -9,11 +9,16 @@
 
 void Lox::run(const std::string& source)
 {
-	Scanner scanner{source};
+	Scanner scanner{source, *this};
 	const auto& tokens = scanner.scan();
 
 	for (const auto& token : tokens)
 		std::cout << to_string(token->getType()) << "\n";
+
+	for (const auto& error : this->errors_)
+	{
+		std::cout << error << "\n";
+	}
 }
 
 bool Lox::hadError() const

@@ -1,10 +1,11 @@
 #include "Scanner.h"
+#include "ErrorRecorder.h"
 #include "Token.h"
 
 #include <cctype>
 
-Scanner::Scanner(const std::string& source):
-	source_{source}
+Scanner::Scanner(const std::string& source, ErrorRecorder& errorRecorder):
+	source_{source}, errorRecorder_{ errorRecorder }
 {
 }
 
@@ -93,7 +94,7 @@ void Scanner::string()
 
 	if (isAtEnd())
 	{
-		//TODO Error: unterminated string
+		errorRecorder_.error(line_, "unterminated string");
 	}
 
 	// eat the closing '"'
@@ -179,16 +180,18 @@ void Scanner::scanToken()
 	// Encountered new line.
 	case '\n': line_++; break;
 
-	}
-
-	if (std::isdigit(c))
-	{
-		number();
-	}
-
-	// Ignore white space
-	if (!std::isspace(c))
-	{
-		//TODO Error: unexpected character
+	default:
+		if (std::isdigit(c))
+		{
+			number();
+		}
+		else
+		{
+			// Ignore white space
+			if (!std::isspace(c))
+			{
+				errorRecorder_.error(line_, "unexpected character");
+			}
+		}
 	}
 }

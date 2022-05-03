@@ -44,5 +44,8 @@
     <ClInclude Include="TokenType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ErrorRecorder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

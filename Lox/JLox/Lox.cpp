@@ -1,5 +1,6 @@
 #include "Lox.h"
 #include "Scanner.h"
+#include "Token.h"
 
 #include <memory>
 #include <vector>
@@ -10,6 +11,9 @@ void Lox::run(const std::string& source)
 {
 	Scanner scanner{source};
 	const auto& tokens = scanner.scan();
+
+	for (const auto& token : tokens)
+		std::cout << to_string(token->getType()) << "\n";
 }
 
 bool Lox::hadError() const

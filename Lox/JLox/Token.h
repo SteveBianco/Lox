@@ -22,6 +22,7 @@ public:
 	// Constructs a token representing a numeric literal.
 	Token(const std::string& lexeme, double literalValue, int line);
 
+	Token(const Token&) = default;
 	~Token() = default;
 
 	TokenType getType() const;

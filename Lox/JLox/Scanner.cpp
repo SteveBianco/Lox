@@ -3,10 +3,62 @@
 #include "Token.h"
 
 #include <cctype>
+#include <unordered_map>
+
+namespace
+{
+	bool isDigit(char c)
+	{
+		return std::isdigit(c);
+	}
+
+	bool isSpace(char c)
+	{
+		return std::isspace(c);
+	}
+
+	bool isAlpha(char c)
+	{
+		return std::isalpha(c) || c == '_';
+	}
+
+	bool isAlphaNumeric(char c)
+	{
+		return isAlpha(c) || isDigit(c);
+	}
+}
+
+namespace
+{
+	std::unordered_map<std::string, TokenType> keywords()
+	{
+		std::unordered_map<std::string, TokenType> keywords;
+
+		keywords.insert({ "and", TokenType::AND });
+		keywords.insert({ "class", TokenType::CLASS });
+		keywords.insert({ "else", TokenType::ELSE });
+		keywords.insert({ "false", TokenType::FALSE });
+		keywords.insert({ "for", TokenType::FOR });
+		keywords.insert({ "fun", TokenType::FUN });
+		keywords.insert({ "if", TokenType::IF });
+		keywords.insert({ "nil", TokenType::NIL });
+		keywords.insert({ "or", TokenType::OR });
+		keywords.insert({ "print", TokenType::PRINT });
+		keywords.insert({ "return", TokenType::RETURN });
+		keywords.insert({ "super", TokenType::SUPER });
+		keywords.insert({ "this", TokenType::THIS });
+		keywords.insert({ "true", TokenType::TRUE });
+		keywords.insert({ "var", TokenType::VAR });
+		keywords.insert({ "while", TokenType::WHILE });
+
+		return keywords;
+	}
+}
 
 Scanner::Scanner(const std::string& source, ErrorRecorder& errorRecorder):
-	source_{source}, errorRecorder_{ errorRecorder }
+	source_{source}, errorRecorder_{ errorRecorder }, keywords_{keywords()}
 {
+
 }
 
 Scanner::~Scanner()
@@ -111,12 +163,12 @@ void Scanner::number()
 		advance();
 	}
 
-	if (peek() == '.' && std::isdigit(peekNext()))
+	if (peek() == '.' && isDigit(peekNext()))
 	{
 		// consume the decimal point
 		advance();
 
-		while (std::isdigit(peek()))
+		while (isDigit(peek()))
 		{
 			advance();
 		}
@@ -124,6 +176,27 @@ void Scanner::number()
 
 	std::string numberStr = source_.substr(start_, current_);
 	addLiteralToken(std::stod(numberStr));
+}
+
+void Scanner::identifier()
+{
+	while (isAlphaNumeric(peek()) && !isAtEnd())
+	{
+		advance();
+	}
+
+	// is the identifier a reserved word?
+	const std::string identifier = source_.substr(start_, current_);
+	const auto reservedWord = keywords_.find(identifier);
+
+	if (reservedWord != keywords_.end())
+	{
+		addToken(reservedWord->second);
+	}
+	else
+	{
+		addToken(TokenType::IDENTIFIER);
+	}
 }
 
 void Scanner::scanToken()
@@ -181,14 +254,18 @@ void Scanner::scanToken()
 	case '\n': line_++; break;
 
 	default:
-		if (std::isdigit(c))
+		if (isDigit(c))
 		{
 			number();
+		}
+		else if (isAlpha(c))
+		{
+			identifier();
 		}
 		else
 		{
 			// Ignore white space
-			if (!std::isspace(c))
+			if (!isSpace(c))
 			{
 				errorRecorder_.error(line_, "unexpected character");
 			}

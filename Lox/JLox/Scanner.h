@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <unordered_map>
 
 class Token;
 struct ErrorRecorder;
@@ -12,6 +13,7 @@ class Scanner
 {
 	const std::string& source_;
 	ErrorRecorder& errorRecorder_;
+	std::unordered_map<std::string, TokenType> keywords_;
 
 	std::vector<std::shared_ptr<Token>> tokens_;
 
@@ -36,6 +38,7 @@ private:
 	void scanToken();
 	void string();
 	void number();
+	void identifier();
 	void addToken(TokenType type);
 	void addLiteralToken(double number);
 	void addLiteralToken(const std::string& str);

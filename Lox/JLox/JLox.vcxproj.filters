@@ -74,5 +74,8 @@
     <ClInclude Include="expressions\UnaryExpression.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="expressions\ExpressionVisitor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

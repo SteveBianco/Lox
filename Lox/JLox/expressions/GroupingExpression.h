@@ -15,6 +15,9 @@ public:
 	{
 		v.visit(*this);
 	}
+
+	const Expression& expression() const { return *expression_;  }
+	const Token& token() const { return operator_; }
 };
 
 

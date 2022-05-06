@@ -15,6 +15,8 @@ public:
 	{
 		v.visit(*this);
 	}
+
+	std::string to_string() const;
 };
 
 

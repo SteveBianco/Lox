@@ -155,6 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="expressions\AstPrinter.cpp" />
     <ClCompile Include="expressions\BinaryExpression.cpp" />
     <ClCompile Include="expressions\GroupingExpression.cpp" />
     <ClCompile Include="expressions\LiteralExpression.cpp" />
@@ -166,6 +167,7 @@
     <ClCompile Include="expressions\UnaryExpression.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="expressions\AstPrinter.h" />
     <ClInclude Include="expressions\BinaryExpression.h" />
     <ClInclude Include="ErrorRecorder.h" />
     <ClInclude Include="expressions\Expression.h" />

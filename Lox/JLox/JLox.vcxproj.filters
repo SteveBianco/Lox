@@ -42,6 +42,9 @@
     <ClCompile Include="expressions\UnaryExpression.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="expressions\AstPrinter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Lox.h">
@@ -75,6 +78,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="expressions\ExpressionVisitor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="expressions\AstPrinter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -6,11 +6,6 @@
 
 #include <sstream>
 
-namespace
-{
-
-}
-
 std::string AstPrinter::print(const Expression& e)
 {
 
@@ -35,7 +30,7 @@ void AstPrinter::visit(const UnaryExpression& e)
 
 void AstPrinter::visit(const GroupingExpression& e)
 {
-	parenthesize(e.token().getLexeme(), { 1, &e.expression() });
+	parenthesize("group", { 1, &e.expression() });
 }
 
 void AstPrinter::visit(const LiteralExpression& e)

@@ -9,23 +9,33 @@
 class Token;
 struct ErrorRecorder;
 
+/**
+* Scans a string of source code and converts it to
+* a sequence of tokens.
+*/
 class Scanner
 {
 	const std::string& source_;
 	ErrorRecorder& errorRecorder_;
 	std::unordered_map<std::string, TokenType> keywords_;
 
-	std::vector<std::shared_ptr<Token>> tokens_;
+	std::vector<std::unique_ptr<Token>> tokens_;
 
+	// index of first character of token currently being parsed
 	int start_ = 0;
+
+	// index of current character being processed
 	int current_ = 0;
+
+	// The line currently being parsed.
+	// incremented whenever a new line character is encounterd.
 	int line_ = 0;
 
 public:
 	Scanner(const std::string& source, ErrorRecorder& errorRecorder);
 	~Scanner();
 
-	const std::vector<std::shared_ptr<Token>>& scan();
+	const std::vector<std::unique_ptr<Token>>& scan();
 
 private:
 	bool isAtEnd() const;

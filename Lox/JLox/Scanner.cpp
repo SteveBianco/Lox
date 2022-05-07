@@ -65,33 +65,24 @@ Scanner::~Scanner()
 {
 }
 
-const std::vector<std::shared_ptr<Token>>& Scanner::scan()
-{
-	while (!isAtEnd())
-	{
-		start_ = current_;
-		scanToken();
-	}
-
-	tokens_.emplace_back(new Token(TokenType::END_OF_FILE, "", line_));
-	return tokens_;
-}
-
 bool Scanner::isAtEnd() const
 {
 	return current_ >= source_.size();
 }
 
+// Returns teh current character and eats it.
 char Scanner::advance()
 {
 	return source_[current_++];
 }
 
+// Returns current character but does not eat it.
 char Scanner::peek() const
 {
 	return source_[current_];
 }
 
+// Returns one beyond the current character.
 char Scanner::peekNext() const
 {
 	if (current_ + 1 >= source_.size())
@@ -100,6 +91,8 @@ char Scanner::peekNext() const
 	return source_[current_ + 1];
 }
 
+// if the current character matches the specified character,
+// eat it and returs its value, otherwise return the null character.
 bool Scanner::match(char expected)
 {
 	if (isAtEnd())
@@ -115,6 +108,8 @@ bool Scanner::match(char expected)
 
 std::string Scanner::getLexeme() const
 {
+	// current_ is the first character we have not
+	// yet processed.
 	return source_.substr(start_, current_);
 }
 
@@ -158,11 +153,14 @@ void Scanner::string()
 
 void Scanner::number()
 {
+	// eat sequence of digits
 	while (std::isdigit(peek()))
 	{
 		advance();
 	}
 
+	// if there is  a decimal point, eat it
+	// and the following sequence of digits.
 	if (peek() == '.' && isDigit(peekNext()))
 	{
 		// consume the decimal point
@@ -180,6 +178,7 @@ void Scanner::number()
 
 void Scanner::identifier()
 {
+	// Eat a sequence of alphanumeric characters
 	while (isAlphaNumeric(peek()) && !isAtEnd())
 	{
 		advance();
@@ -201,6 +200,7 @@ void Scanner::identifier()
 
 void Scanner::scanToken()
 {
+	// First character of the next token
 	const char c = advance();
 
 	switch (c)
@@ -218,6 +218,8 @@ void Scanner::scanToken()
 	case '*': addToken(TokenType::STAR); break;
 
 	// Handle tokens that could be single or two characters
+		// Note match() will eat the next character if it matches
+		// the specified character.
 	case '!':
 		addToken(match('=') ? TokenType::BANG_EQUAL : TokenType::BANG);
 		break;
@@ -236,8 +238,10 @@ void Scanner::scanToken()
 		{
 			// it's a double slash which starts a comment. 
 			// Eat all chars till end of line, leaving the new line
+			// so it will get processed and cause the line no. to increment.
 			while (peek() != '\n' && !isAtEnd())
 			{
+				// eat the character
 				advance();
 			}
 		}
@@ -248,6 +252,7 @@ void Scanner::scanToken()
 		}
 		break;
 
+	// Handle string literal
 	case '"': string(); break;
 
 	// Encountered new line.
@@ -256,15 +261,17 @@ void Scanner::scanToken()
 	default:
 		if (isDigit(c))
 		{
+			// Handle number literal
 			number();
 		}
 		else if (isAlpha(c))
 		{
+			// Handle identifiers and keywords.
 			identifier();
 		}
 		else
 		{
-			// Ignore white space
+			// Ignore white space - otherwise if we got here it's an error.
 			if (!isSpace(c))
 			{
 				errorRecorder_.error(line_, "unexpected character");
@@ -272,3 +279,19 @@ void Scanner::scanToken()
 		}
 	}
 }
+
+const std::vector<std::unique_ptr<Token>>& Scanner::scan()
+{
+	while (!isAtEnd())
+	{
+		// First character of next token is first unprocessed character
+		start_ = current_;
+
+		// Scan the next token
+		scanToken();
+	}
+
+	tokens_.emplace_back(new Token(TokenType::END_OF_FILE, "", line_));
+	return tokens_;
+}
+

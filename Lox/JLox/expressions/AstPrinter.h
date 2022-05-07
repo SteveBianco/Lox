@@ -5,6 +5,9 @@
 #include <vector>
 #include <sstream>
 
+/**
+* Implements pretty-printing of expressions.
+*/
 class AstPrinter : public ExpressionVisitor
 {
 	std::stringstream ss;

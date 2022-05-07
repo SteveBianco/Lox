@@ -6,11 +6,6 @@
 
 #include <sstream>
 
-namespace
-{
-
-}
-
 std::string AstPrinter::print(const Expression& e)
 {
 

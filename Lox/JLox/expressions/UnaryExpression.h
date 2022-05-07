@@ -5,6 +5,9 @@
 
 #include <memory>
 
+/**
+* Represents  a unary expression: e.g. !expression.
+*/
 class UnaryExpression : public Expression
 {
 	std::unique_ptr<Expression> right_;

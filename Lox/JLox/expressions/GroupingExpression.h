@@ -5,6 +5,9 @@
 
 #include <memory>
 
+/**
+* Represents a parenthesized expression
+*/
 class GroupingExpression : public Expression
 {
 	std::unique_ptr<Expression> expression_;

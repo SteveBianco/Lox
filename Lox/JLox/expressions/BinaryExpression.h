@@ -5,6 +5,10 @@
 
 #include <memory>
 
+/**
+*  Represents a binary expression, e.g. two expressions combined 
+* addording to an operator: e.g. a+b or a*b.
+*/
 class BinaryExpression : public Expression
 {
 	std::unique_ptr<Expression> left_, right_;

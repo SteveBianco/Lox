@@ -2,6 +2,10 @@
 
 class ExpressionVisitor;
 
+/**
+ * Base class for all expressions.
+ * Primarily provides ability to accept ExpressionVisitors.
+ */
 class Expression
 {
 public:

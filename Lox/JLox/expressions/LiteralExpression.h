@@ -6,6 +6,9 @@
 #include <variant>
 #include <memory>
 
+/**
+* Represents a literal: e.g. a number or a string
+*/
 class LiteralExpression : public Expression
 {
 	std::variant<std::string, double> value_;

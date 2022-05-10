@@ -161,6 +161,7 @@
     <ClCompile Include="expressions\LiteralExpression.cpp" />
     <ClCompile Include="Lox.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="parser\Parser.cpp" />
     <ClCompile Include="Scanner.cpp" />
     <ClCompile Include="Token.cpp" />
     <ClCompile Include="TokenType.cpp" />
@@ -175,6 +176,7 @@
     <ClInclude Include="expressions\GroupingExpression.h" />
     <ClInclude Include="expressions\LiteralExpression.h" />
     <ClInclude Include="Lox.h" />
+    <ClInclude Include="parser\Parser.h" />
     <ClInclude Include="Scanner.h" />
     <ClInclude Include="Token.h" />
     <ClInclude Include="TokenType.h" />

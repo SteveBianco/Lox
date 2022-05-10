@@ -12,9 +12,11 @@
 class BinaryExpression : public Expression
 {
 	std::unique_ptr<Expression> left_, right_;
-	Token operator_;
+	Token operation_;
 
 public:
+	BinaryExpression(Token operation, std::unique_ptr<Expression> lhs, std::unique_ptr<Expression> rhs);
+
 	void accept(ExpressionVisitor& v) const override
 	{
 		v.visit(*this);
@@ -22,6 +24,6 @@ public:
 
 	const Expression& left() const { return *left_; }
 	const Expression& right() const { return *right_; }
-	const Token& token() const { return operator_; }
+	const Token& token() const { return operation_; }
 };
 

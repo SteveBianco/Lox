@@ -1,4 +1,6 @@
 #include "Parser.h"
+#include "expressions/BinaryExpression.h"
+
 
 Parser::Parser(const std::vector<std::unique_ptr<Token>>& tokens):
 	tokens_{tokens}
@@ -12,14 +14,17 @@ std::unique_ptr<Expression> Parser::expression()
 
 std::unique_ptr<Expression> Parser::equality()
 {
-	auto expr = comparison();
+	std::unique_ptr<Expression> expr = comparison();
 
 	while (match({ TokenType::BANG_EQUAL, TokenType::EQUAL_EQUAL }))
 	{
-
+		// eith == or !=
+		const Token& operation = previous();
+		std::unique_ptr<Expression> rhs = comparison();
+		expr = std::make_unique<BinaryExpression>(operation, std::move(expr), std::move(rhs));
 	}
 
-	return std::unique_ptr<Expression>();
+	return expr;
 }
 
 std::unique_ptr<Expression> Parser::comparison()

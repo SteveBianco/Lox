@@ -1,5 +1,6 @@
 #include "Parser.h"
 #include "expressions/BinaryExpression.h"
+#include "expressions/UnaryExpression.h"
 
 
 Parser::Parser(const std::vector<std::unique_ptr<Token>>& tokens):
@@ -12,6 +13,7 @@ std::unique_ptr<Expression> Parser::expression()
 	return equality();
 }
 
+// equality -> comparison ( '==' | '!=' ) comparison 
 std::unique_ptr<Expression> Parser::equality()
 {
 	std::unique_ptr<Expression> expr = comparison();
@@ -27,26 +29,70 @@ std::unique_ptr<Expression> Parser::equality()
 	return expr;
 }
 
+// comparison-> term ('>' | '>=' | '<' | '<=') term
 std::unique_ptr<Expression> Parser::comparison()
 {
-	return std::unique_ptr<Expression>();
+	std::unique_ptr<Expression> expr = term();
+
+	while (match({ TokenType::GREATER, TokenType::GREATER_EQUAL, TokenType::LESS, TokenType::LESS_EQUAL }))
+	{
+		// one of > , >= , < , <= 
+		const Token& operation = previous();
+		std::unique_ptr<Expression> rhs = term();
+		expr = std::make_unique<BinaryExpression>(operation, std::move(expr), std::move(rhs));
+	}
+
+	return expr;
 }
 
+// term -> factor ( '+' | '-' ) factor
 std::unique_ptr<Expression> Parser::term()
 {
-	return std::unique_ptr<Expression>();
+	std::unique_ptr<Expression> expr = factor();
+
+	while (match({ TokenType::PLUS, TokenType::MINUS }))
+	{
+		// eith + or -
+		const Token& operation = previous();
+		std::unique_ptr<Expression> rhs = factor();
+		expr = std::make_unique<BinaryExpression>(operation, std::move(expr), std::move(rhs));
+	}
+
+	return expr;
 }
 
+// factor -> unary ( "*' | '/' ) unary
 std::unique_ptr<Expression> Parser::factor()
 {
-	return std::unique_ptr<Expression>();
+	std::unique_ptr<Expression> expr = unary();
+
+	while (match({ TokenType::STAR, TokenType::SLASH }))
+	{
+		// eith * or /
+		const Token& operation = previous();
+		std::unique_ptr<Expression> rhs = unary();
+		expr = std::make_unique<BinaryExpression>(operation, std::move(expr), std::move(rhs));
+	}
+
+	return expr;
 }
 
+// unary -> ( '!' | '-'  ) unary | primary
 std::unique_ptr<Expression> Parser::unary()
 {
-	return std::unique_ptr<Expression>();
+	if (match({ TokenType::BANG , TokenType::MINUS }))
+	{
+		const Token& operation = previous();
+		std::unique_ptr<Expression> rhs = unary();
+		return std::make_unique<UnaryExpression>(operation, std::move(rhs));
+	}
+	else 
+	{
+		return primary();
+	}
 }
 
+// 
 std::unique_ptr<Expression> Parser::primary()
 {
 	return std::unique_ptr<Expression>();

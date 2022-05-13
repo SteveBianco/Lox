@@ -1,11 +1,25 @@
 #include "Parser.h"
 #include "expressions/BinaryExpression.h"
 #include "expressions/UnaryExpression.h"
+#include "expressions/GroupingExpression.h"
+#include "expressions/LiteralExpression.h"
 
 
-Parser::Parser(const std::vector<std::unique_ptr<Token>>& tokens):
-	tokens_{tokens}
+Parser::Parser(const std::vector<std::unique_ptr<Token>>& tokens, ErrorRecorder& errorReporter):
+	tokens_{ tokens }, errorReporter_{ errorReporter }
 {
+}
+
+std::unique_ptr<Expression> Parser::parse()
+{
+	try
+	{
+		return expression();
+	}
+	catch (Parser::ParseError)
+	{
+		return nullptr;
+	}
 }
 
 std::unique_ptr<Expression> Parser::expression()
@@ -95,7 +109,24 @@ std::unique_ptr<Expression> Parser::unary()
 // 
 std::unique_ptr<Expression> Parser::primary()
 {
-	return std::unique_ptr<Expression>();
+	// Parse number or string literals, 'true', 'false' and 'nil'.
+	if (match({TokenType::NUMBER, TokenType::STRING, TokenType::TRUE, TokenType::FALSE, TokenType::NIL}))
+	{
+		// the literal is defined by its corresponding token
+		return std::make_unique<LiteralExpression>(previous());
+	}
+
+	// Parse '(' expr ')'
+	if (match(TokenType::LEFT_PAREN))
+	{
+		std::unique_ptr<Expression> expr = expression();
+
+		consume(TokenType::RIGHT_PAREN, "Expected ')'");
+
+		return std::make_unique<GroupingExpression>(std::move(expr));
+	}
+
+	throw error(peek(), "Expect expression");
 }
 
 bool Parser::match(TokenType t)
@@ -115,6 +146,20 @@ bool Parser::match(const std::vector<TokenType>& ts)
 		}
 	}
 	return false;
+}
+
+const Token& Parser::consume(TokenType t, const std::string& errorMessage)
+{
+	if (check(t))
+		return advance();
+
+	throw error(peek(), errorMessage);
+}
+
+Parser::ParseError Parser::error(const Token& token, const std::string& errorMessage)
+{
+	errorReporter_.error(token, errorMessage);
+	return ParseError();
 }
 
 const Token& Parser::peek() const
@@ -150,4 +195,28 @@ bool Parser::isAtEnd() const
 {
 	// TODO should check current >= tokens_.size()?
 	return tokens_[current]->getType() == TokenType::END_OF_FILE;
+}
+
+void Parser::synchronize() {
+	advance();
+
+	while (!isAtEnd()) {
+		if (previous().getType() == TokenType::SEMICOLON) 
+			return;
+
+		switch (peek().getType()) 
+		{
+		case TokenType::CLASS:
+		case TokenType::FUN:
+		case TokenType::VAR:
+		case TokenType::FOR:
+		case TokenType::IF:
+		case TokenType::WHILE:
+		case TokenType::PRINT:
+		case TokenType::RETURN:
+			return;
+		}
+
+		advance();
+	}
 }

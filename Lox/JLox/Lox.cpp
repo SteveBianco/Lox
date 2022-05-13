@@ -46,3 +46,14 @@ void Lox::report(int lineNumber, const std::string& where, const std::string& me
     auto error = std::format("[line {}] Error {} {}", lineNumber, where, message);
 	errors_.push_back(error);
 }
+
+void Lox::error(const Token& token, const std::string& errorMessage)
+{
+	if (token.getType() == TokenType::END_OF_FILE)
+	{
+		report(token.getLineNumber(), " at end ", errorMessage);
+	}
+	else {
+		report(token.getLineNumber(), " at '" + token.getLexeme() + "' ", errorMessage);
+	}
+}

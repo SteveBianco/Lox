@@ -1,6 +1,8 @@
 #pragma once
 #include "Token.h"
 #include "expressions/Expression.h"
+#include "ErrorRecorder.h"
+
 #include <vector>
 #include <memory>
 
@@ -8,9 +10,11 @@ class Parser
 {
 	const std::vector<std::unique_ptr<Token>>& tokens_;
 	int current = 0;
+	ErrorRecorder& errorReporter_;
 
 public:
-	Parser(const std::vector<std::unique_ptr<Token>>& tokens);
+	Parser(const std::vector<std::unique_ptr<Token>>& tokens, ErrorRecorder& errorReporter);
+	std::unique_ptr<Expression> parse();
 
 private:
 	std::unique_ptr<Expression> expression();
@@ -24,10 +28,15 @@ private:
 	bool check(TokenType t) const;
 	bool match(TokenType t);
 	bool match(const std::vector<TokenType>& ts);
-	bool  isAtEnd() const;
+	const Token& consume(TokenType t, const std::string& errorMessage);
 
 	const Token& peek() const;
 	const Token& previous() const;
-	const Token& advance();
+	const Token& advance(); bool  isAtEnd() const;
+
+	class ParseError {};
+	ParseError error(const Token& token, const std::string& errorMessage);
+
+	void synchronize();
 };
 

@@ -11,6 +11,7 @@ std::string AstPrinter::print(const Expression& e)
 
 	ss.clear();
 	e.accept(*this);
+	ss << "\n";
 	return ss.str();
 }
 

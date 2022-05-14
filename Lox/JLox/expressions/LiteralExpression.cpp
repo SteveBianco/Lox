@@ -1,7 +1,7 @@
 #include "LiteralExpression.h"
 
 LiteralExpression::LiteralExpression(const Token& token):
-    token_{ token_ }
+    token_{ token }
 {
 }
 

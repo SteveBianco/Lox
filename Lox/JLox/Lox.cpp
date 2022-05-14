@@ -1,8 +1,11 @@
 #include "Lox.h"
 #include "Scanner.h"
 #include "Token.h"
+#include "parser/Parser.h"
+#include "expressions/AstPrinter.h"
 
-#include <memory>
+#include <memory>-		expression	unique_ptr {left_=unique_ptr {token_={type_=-842150451 lexeme_="" literal_=[valueless_by_exception] ...} } right_=...}	std::unique_ptr<Expression,std::default_delete<Expression>>
+
 #include <vector>
 #include <iostream>
 #include <format>
@@ -12,13 +15,14 @@ void Lox::run(const std::string& source)
 	Scanner scanner{source, *this};
 	const auto& tokens = scanner.scan();
 
-	for (const auto& token : tokens)
-		std::cout << to_string(token->getType()) << "\n";
+	Parser parser(tokens, *this);
+	std::unique_ptr<Expression> expression = parser.parse();
 
-	for (const auto& error : this->errors_)
-	{
-		std::cout << error << "\n";
-	}
+	if (hadError())
+		return;
+
+	AstPrinter printer;
+	std::cout << printer.print(*expression);
 }
 
 bool Lox::hadError() const

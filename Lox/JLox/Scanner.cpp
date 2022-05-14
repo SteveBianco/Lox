@@ -110,7 +110,7 @@ std::string Scanner::getLexeme() const
 {
 	// current_ is the first character we have not
 	// yet processed.
-	return source_.substr(start_, current_);
+	return source_.substr(start_, current_ - start_);
 }
 
 void Scanner::addToken(TokenType type)
@@ -147,7 +147,7 @@ void Scanner::string()
 	// eat the closing '"'
 	advance();
 
-	std::string str = source_.substr(start_ + 1, current_ - 1);
+	std::string str = source_.substr(start_ + 1, current_ - start_ - 1);
 	addLiteralToken(str);
 }
 
@@ -172,7 +172,7 @@ void Scanner::number()
 		}
 	}
 
-	std::string numberStr = source_.substr(start_, current_);
+	std::string numberStr = source_.substr(start_, current_ - start_);
 	addLiteralToken(std::stod(numberStr));
 }
 
@@ -185,7 +185,7 @@ void Scanner::identifier()
 	}
 
 	// is the identifier a reserved word?
-	const std::string identifier = source_.substr(start_, current_);
+	const std::string identifier = source_.substr(start_, current_ - start_);
 	const auto reservedWord = keywords_.find(identifier);
 
 	if (reservedWord != keywords_.end())

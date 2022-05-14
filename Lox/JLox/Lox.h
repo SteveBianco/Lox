@@ -22,5 +22,6 @@ public:
 
 private:
 	void report(int line, const std::string& where, const std::string& message);
+	void error(const Token& token, const std::string& errorMessage);
 };
 

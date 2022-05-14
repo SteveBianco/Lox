@@ -11,14 +11,17 @@
 */
 class LiteralExpression : public Expression
 {
-	std::variant<std::string, double> value_;
+	Token token_;
 
 public:
+	LiteralExpression(const Token& token);
+
 	void accept(ExpressionVisitor& v) const override
 	{
 		v.visit(*this);
 	}
 
+	const Token& token() const;
 	std::string to_string() const;
 };
 

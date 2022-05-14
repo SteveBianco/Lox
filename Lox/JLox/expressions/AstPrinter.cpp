@@ -11,6 +11,7 @@ std::string AstPrinter::print(const Expression& e)
 
 	ss.clear();
 	e.accept(*this);
+	ss << "\n";
 	return ss.str();
 }
 
@@ -41,6 +42,7 @@ void AstPrinter::visit(const LiteralExpression& e)
 void AstPrinter::parenthesize(const std::string& name, const std::vector<const Expression*>& exprs)
 {
 	ss << "(";
+	ss << name;
 
 	for (const auto e : exprs)
 	{

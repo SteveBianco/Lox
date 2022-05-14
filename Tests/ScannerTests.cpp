@@ -76,6 +76,22 @@ namespace Tests
 			Assert::AreEqual(1, counts[STRING]);
 		}
 
+		TEST_METHOD(ShouldScanNumbersAndIdentifiers)
+		{
+			const std::string source = "x = 1.2 * aa; \n y2 = 3.14 * xyz;";
+
+			MockErrorRecorder errors;
+			Scanner scanner{ source, errors };
+			const auto& tokens = scanner.scan();
+
+			const int expectedTokenCount = 13; // include eof token
+			Assert::AreEqual(expectedTokenCount, (int)tokens.size());
+
+			auto counts = countByType(tokens);
+			Assert::AreEqual(4, counts[IDENTIFIER]);
+			Assert::AreEqual(2, counts[NUMBER]);
+		}
+
 		unordered_map<TokenType, int> countByType(const vector<unique_ptr<Token>>& tokens)
 		{
 			unordered_map<TokenType, int> actualCounts;

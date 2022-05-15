@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <memory>
+#include <functional>
 
 class Parser
 {
@@ -24,6 +25,8 @@ private:
 	std::unique_ptr<Expression> factor();
 	std::unique_ptr<Expression> unary();
 	std::unique_ptr<Expression> primary();
+	std::unique_ptr<Expression> makeBinaryExpression(const std::vector<TokenType>& operations, 
+		std::function<std::unique_ptr<Expression>()>&& expressionProducer);
 
 	bool check(TokenType t) const;
 	bool match(TokenType t);

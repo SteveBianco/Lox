@@ -4,6 +4,7 @@
 #include "expressions/GroupingExpression.h"
 #include "expressions/LiteralExpression.h"
 
+#include <functional>
 
 Parser::Parser(const std::vector<Token>& tokens, ErrorRecorder& errorReporter):
 	tokens_{ tokens }, errorReporter_{ errorReporter }
@@ -27,68 +28,55 @@ std::unique_ptr<Expression> Parser::expression()
 	return equality();
 }
 
+// Parses rules of the form X -> T operation T where T is a non-terminal and operation corresponds
+// to a token matching one of the specified types.
+std::unique_ptr<Expression> Parser::makeBinaryExpression(const std::vector<TokenType>& operations,
+	std::function<std::unique_ptr<Expression>()>&& expressionProducer)
+{
+	// parse the left hand side of the binary expresion
+	std::unique_ptr<Expression> lhs = expressionProducer();
+
+	// match one of the specified opoerations.
+	while (match(operations))
+	{
+		const Token& operation = previous();
+
+		//parse the right hand side of the binary expression
+		std::unique_ptr<Expression> rhs = expressionProducer();
+
+		// create the binary expression
+		lhs = std::make_unique<BinaryExpression>(operation, std::move(lhs), std::move(rhs));
+	}
+
+	return lhs;
+}
+
 // equality -> comparison ( '==' | '!=' ) comparison 
 std::unique_ptr<Expression> Parser::equality()
 {
-	std::unique_ptr<Expression> expr = comparison();
-
-	while (match({ TokenType::BANG_EQUAL, TokenType::EQUAL_EQUAL }))
-	{
-		// eith == or !=
-		const Token& operation = previous();
-		std::unique_ptr<Expression> rhs = comparison();
-		expr = std::make_unique<BinaryExpression>(operation, std::move(expr), std::move(rhs));
-	}
-
-	return expr;
+	return makeBinaryExpression({ TokenType::BANG_EQUAL, TokenType::EQUAL_EQUAL },
+		[&]() { return comparison();  });
 }
 
 // comparison-> term ('>' | '>=' | '<' | '<=') term
 std::unique_ptr<Expression> Parser::comparison()
 {
-	std::unique_ptr<Expression> expr = term();
-
-	while (match({ TokenType::GREATER, TokenType::GREATER_EQUAL, TokenType::LESS, TokenType::LESS_EQUAL }))
-	{
-		// one of > , >= , < , <= 
-		const Token& operation = previous();
-		std::unique_ptr<Expression> rhs = term();
-		expr = std::make_unique<BinaryExpression>(operation, std::move(expr), std::move(rhs));
-	}
-
-	return expr;
+	return makeBinaryExpression({ TokenType::GREATER, TokenType::GREATER_EQUAL, TokenType::LESS, TokenType::LESS_EQUAL },
+		[&]() { return term();  });
 }
 
 // term -> factor ( '+' | '-' ) factor
 std::unique_ptr<Expression> Parser::term()
 {
-	std::unique_ptr<Expression> expr = factor();
-
-	while (match({ TokenType::PLUS, TokenType::MINUS }))
-	{
-		// eith + or -
-		const Token& operation = previous();
-		std::unique_ptr<Expression> rhs = factor();
-		expr = std::make_unique<BinaryExpression>(operation, std::move(expr), std::move(rhs));
-	}
-
-	return expr;
+	return makeBinaryExpression({ TokenType::PLUS, TokenType::MINUS },
+		[&]() { return factor();  });
 }
 
 // factor -> unary ( "*' | '/' ) unary
 std::unique_ptr<Expression> Parser::factor()
 {
-	std::unique_ptr<Expression> expr = unary();
-
-	while (match({ TokenType::STAR, TokenType::SLASH }))
-	{
-		// eith * or /
-		const Token& operation = previous();
-		std::unique_ptr<Expression> rhs = unary();
-		expr = std::make_unique<BinaryExpression>(operation, std::move(expr), std::move(rhs));
-	}
-
-	return expr;
+	return makeBinaryExpression({ TokenType::STAR, TokenType::SLASH },
+		[&]() { return unary();  });
 }
 
 // unary -> ( '!' | '-'  ) unary | primary

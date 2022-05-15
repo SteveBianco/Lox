@@ -115,17 +115,17 @@ std::string Scanner::getLexeme() const
 
 void Scanner::addToken(TokenType type)
 {
-	tokens_.emplace_back(new Token(type, getLexeme(), line_));
+	tokens_.emplace_back(type, getLexeme(), line_);
 }
 
 void Scanner::addLiteralToken(double number)
 {
-	tokens_.emplace_back(new Token(getLexeme(), number, line_));
+	tokens_.emplace_back(getLexeme(), number, line_);
 }
 
 void Scanner::addLiteralToken(const std::string& str)
 {
-	tokens_.emplace_back(new Token(getLexeme(), str, line_));
+	tokens_.emplace_back(getLexeme(), str, line_);
 }
 
 void Scanner::string()
@@ -280,7 +280,7 @@ void Scanner::scanToken()
 	}
 }
 
-const std::vector<std::unique_ptr<Token>>& Scanner::scan()
+const std::vector<Token>& Scanner::scan()
 {
 	while (!isAtEnd())
 	{
@@ -291,7 +291,7 @@ const std::vector<std::unique_ptr<Token>>& Scanner::scan()
 		scanToken();
 	}
 
-	tokens_.emplace_back(new Token(TokenType::END_OF_FILE, "", line_));
+	tokens_.emplace_back(TokenType::END_OF_FILE, "", line_);
 	return tokens_;
 }
 

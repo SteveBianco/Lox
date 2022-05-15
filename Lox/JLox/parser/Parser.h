@@ -5,15 +5,16 @@
 
 #include <vector>
 #include <memory>
+#include <functional>
 
 class Parser
 {
-	const std::vector<std::unique_ptr<Token>>& tokens_;
+	const std::vector<Token>& tokens_;
 	int current = 0;
 	ErrorRecorder& errorReporter_;
 
 public:
-	Parser(const std::vector<std::unique_ptr<Token>>& tokens, ErrorRecorder& errorReporter);
+	Parser(const std::vector<Token>& tokens, ErrorRecorder& errorReporter);
 	std::unique_ptr<Expression> parse();
 
 private:
@@ -24,6 +25,8 @@ private:
 	std::unique_ptr<Expression> factor();
 	std::unique_ptr<Expression> unary();
 	std::unique_ptr<Expression> primary();
+	std::unique_ptr<Expression> makeBinaryExpression(const std::vector<TokenType>& operations, 
+		std::function<std::unique_ptr<Expression>()>&& expressionProducer);
 
 	bool check(TokenType t) const;
 	bool match(TokenType t);

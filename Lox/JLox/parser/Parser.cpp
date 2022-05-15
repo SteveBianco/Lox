@@ -5,7 +5,7 @@
 #include "expressions/LiteralExpression.h"
 
 
-Parser::Parser(const std::vector<std::unique_ptr<Token>>& tokens, ErrorRecorder& errorReporter):
+Parser::Parser(const std::vector<Token>& tokens, ErrorRecorder& errorReporter):
 	tokens_{ tokens }, errorReporter_{ errorReporter }
 {
 }
@@ -165,12 +165,12 @@ Parser::ParseError Parser::error(const Token& token, const std::string& errorMes
 const Token& Parser::peek() const
 {
 	// TODO should check current >= tokens_.size()?
-	return *tokens_[current];
+	return tokens_[current];
 }
 
 const Token& Parser::previous() const
 {
-	return *tokens_[current - 1];
+	return tokens_[current - 1];
 }
 
 bool Parser::check(TokenType t) const
@@ -194,7 +194,7 @@ const Token& Parser::advance()
 bool Parser::isAtEnd() const
 {
 	// TODO should check current >= tokens_.size()?
-	return tokens_[current]->getType() == TokenType::END_OF_FILE;
+	return tokens_[current].getType() == TokenType::END_OF_FILE;
 }
 
 void Parser::synchronize() {

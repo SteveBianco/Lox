@@ -8,12 +8,12 @@
 
 class Parser
 {
-	const std::vector<std::unique_ptr<Token>>& tokens_;
+	const std::vector<Token>& tokens_;
 	int current = 0;
 	ErrorRecorder& errorReporter_;
 
 public:
-	Parser(const std::vector<std::unique_ptr<Token>>& tokens, ErrorRecorder& errorReporter);
+	Parser(const std::vector<Token>& tokens, ErrorRecorder& errorReporter);
 	std::unique_ptr<Expression> parse();
 
 private:

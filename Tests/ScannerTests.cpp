@@ -92,37 +92,37 @@ namespace Tests
 			Assert::AreEqual(2, counts[NUMBER]);
 		}
 
-		unordered_map<TokenType, int> countByType(const vector<unique_ptr<Token>>& tokens)
+		unordered_map<TokenType, int> countByType(const vector<Token>& tokens)
 		{
 			unordered_map<TokenType, int> actualCounts;
 
 			for (const auto& token : tokens)
 			{
-				++actualCounts[token->getType()];
+				++actualCounts[token.getType()];
 			}
 
 			return actualCounts;
 		}
 
-		void validateTokenCounts(const vector<unique_ptr<Token>>& tokens, const unordered_map<TokenType, int>& expectedCounts)
+		void validateTokenCounts(const vector<Token>& tokens, const unordered_map<TokenType, int>& expectedCounts)
 		{
 			unordered_map<TokenType, int> actualCounts;
 
 			for (const auto& token : tokens)
 			{
-				++actualCounts[token->getType()];
+				++actualCounts[token.getType()];
 			}
 
 			Assert::IsTrue(actualCounts == expectedCounts);
 		}
 
-		void validateTokenCountsAllEqualOne(const vector<unique_ptr<Token>>& tokens)
+		void validateTokenCountsAllEqualOne(const vector<Token>& tokens)
 		{
 			unordered_map<TokenType, int> actualCounts;
 
 			for (const auto& token : tokens)
 			{
-				++actualCounts[token->getType()];
+				++actualCounts[token.getType()];
 			}
 
 			for (const auto& entry : actualCounts)

@@ -1,12 +1,11 @@
 #pragma once
 #include "TokenType.h"
+#include "Token.h"
 
 #include <string>
 #include <vector>
-#include <memory>
 #include <unordered_map>
 
-class Token;
 struct ErrorRecorder;
 
 /**
@@ -19,7 +18,7 @@ class Scanner
 	ErrorRecorder& errorRecorder_;
 	std::unordered_map<std::string, TokenType> keywords_;
 
-	std::vector<std::unique_ptr<Token>> tokens_;
+	std::vector<Token> tokens_;
 
 	// index of first character of token currently being parsed
 	int start_ = 0;
@@ -35,7 +34,7 @@ public:
 	Scanner(const std::string& source, ErrorRecorder& errorRecorder);
 	~Scanner();
 
-	const std::vector<std::unique_ptr<Token>>& scan();
+	const std::vector<Token>& scan();
 
 private:
 	bool isAtEnd() const;

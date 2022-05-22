@@ -17,6 +17,18 @@ Token::Token(const std::string& lexeme, double literalValue, int line) :
 	literal_ = literalValue;
 }
 
+Token::Token(const std::string& lexeme, bool literalValue, int line) :
+	Token(literalValue ? TokenType::TRUE : TokenType::FALSE, lexeme, line)
+{
+	literal_ = literalValue;
+}
+
+Token::Token(const std::string& lexeme, nullptr_t literalValue, int line) :
+	Token(TokenType::NIL, lexeme, line)
+{
+	literal_ = literalValue;
+}
+
 TokenType Token::getType() const
 {
 	return type_;
@@ -32,14 +44,9 @@ int Token::getLineNumber() const
 	return line_;
 }
 
-std::string Token::getStringLiteral() const
+std::optional<LiteralValue> Token::getOptionalValue() const
 {
-	return std::get<std::string>(literal_);
-}
-
-double Token::getNumericLiteral() const
-{
-	return std::get<double>(literal_);
+	return std::optional<LiteralValue>();
 }
 
 namespace
@@ -55,12 +62,29 @@ namespace
 		{
 			return str;
 		}
+
+		std::string operator() (bool val) const
+		{
+			return val ? "true" : "false";
+		}
+
+		std::string operator() (nullptr_t) const
+		{
+			return "null";
+		}
 	};
 }
 
 Token::operator std::string() const
 {
-	return to_string(type_) + " " 
-		+ lexeme_ + " " 
-		+ std::visit(LiteralToString{}, literal_);
+	std::string str = to_string(type_) + " " + lexeme_;
+
+	auto valueOptional = getOptionalValue();
+
+	if (valueOptional)
+	{
+		str += " " + std::visit(LiteralToString{}, valueOptional.value());
+	}
+
+	return str;
 }

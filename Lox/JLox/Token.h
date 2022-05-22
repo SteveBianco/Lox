@@ -2,13 +2,16 @@
 #include "TokenType.h"
 #include <string>
 #include <variant>
+#include <optional>
+
+using LiteralValue = std::variant<std::string, double, bool, nullptr_t>;
 
 class Token
 {
 	const TokenType type_;
 	const std::string lexeme_;
 
-	std::variant<std::string, double> literal_;
+	std::optional<LiteralValue> literal_;
 	 
 	const int line_;
 
@@ -22,6 +25,9 @@ public:
 	// Constructs a token representing a numeric literal.
 	Token(const std::string& lexeme, double literalValue, int line);
 
+	Token(const std::string& lexeme, bool literalValue, int line);
+	Token(const std::string& lexeme, nullptr_t literalValue, int line);
+
 	Token(const Token&) = default;
 	~Token() = default;
 
@@ -29,11 +35,8 @@ public:
 	const std::string& getLexeme() const;
 	int getLineNumber() const;
 
-	// Throws unless token type is STRING.
-	std::string getStringLiteral() const;
-	
-	// Throws unless token type is NUMBER
-	double getNumericLiteral() const;
+	// Returns non-empty optional if the token represents a literal value.
+	std::optional<LiteralValue> getOptionalValue() const;
 
 	operator std::string() const;
 };

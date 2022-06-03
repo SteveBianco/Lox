@@ -16,6 +16,8 @@ class LiteralExpression : public Expression
 public:
 	LiteralExpression(const Token& token);
 
+	const LiteralValue& getValue() const;
+
 	void accept(ExpressionVisitor& v) const override
 	{
 		v.visit(*this);

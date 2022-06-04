@@ -10,6 +10,7 @@ class Interpreter : public ExpressionVisitor
 
 public:
 	void evaluate(const Expression& e);
+	const LiteralValue& value() const { return value_; }
 
 	virtual void visit(const Expression& e) override;
 	virtual void visit(const BinaryExpression& e) override;

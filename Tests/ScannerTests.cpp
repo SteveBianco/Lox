@@ -4,6 +4,7 @@
 #include "TokenType.h"
 #include "Scanner.h"
 #include "ErrorRecorder.h"
+#include "MockErrorRecorder.h"
 
 #include <vector>
 #include <unordered_map>
@@ -18,21 +19,6 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace Tests
 {
-	struct MockErrorRecorder : public ErrorRecorder
-	{
-		int errors = 0;
-
-		void error(int lineNumber, const std::string& message) override
-		{
-			errors++;
-		}
-
-		void error(const Token& token, const std::string& errorMessage) override
-		{
-
-		}
-	};
-
 	TEST_CLASS(ScannerTests)
 	{
 	public:

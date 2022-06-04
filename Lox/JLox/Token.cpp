@@ -46,7 +46,7 @@ int Token::getLineNumber() const
 
 std::optional<LiteralValue> Token::getOptionalValue() const
 {
-	return std::optional<LiteralValue>();
+	return literal_;
 }
 
 namespace

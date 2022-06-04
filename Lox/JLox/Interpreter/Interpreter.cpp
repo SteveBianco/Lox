@@ -14,6 +14,19 @@ void Interpreter::visit(const Expression& e)
 {
 }
 
+Interpreter::RunTimeError::RunTimeError(Token token, std::string message):
+	token_{token}, message_{message}
+{
+}
+
+
+template<typename ValueT>
+void Interpreter::validateOperand(const Token& operation, const LiteralValue& operand, const std::string& message)
+{
+	if (!std::holds_alternative<ValueT>(operand))
+		throw RunTimeError(operation, message);
+}
+
 namespace
 {
 	bool isEqual(const LiteralValue& value1, const LiteralValue& value2)
@@ -41,18 +54,30 @@ void Interpreter::visit(const BinaryExpression& e)
 		break;
 
 	case TokenType::GREATER:
+		validateOperand<double>(e.token(), left, "Expected numerical value");
+		validateOperand<double>(e.token(), right, "Expected numerical value");
+
 		value_ = std::get<double>(left) > std::get<double>(right);
 		break;
 
 	case TokenType::GREATER_EQUAL:
+		validateOperand<double>(e.token(), left, "Expected numerical value");
+		validateOperand<double>(e.token(), right, "Expected numerical value");
+
 		value_ = std::get<double>(left) >= std::get<double>(right);
 		break;
 
 	case TokenType::LESS:
+		validateOperand<double>(e.token(), left, "Expected numerical value");
+		validateOperand<double>(e.token(), right, "Expected numerical value");
+
 		value_ = std::get<double>(left) < std::get<double>(right);
 		break;
 
 	case TokenType::LESS_EQUAL:
+		validateOperand<double>(e.token(), left, "Expected numerical value");
+		validateOperand<double>(e.token(), right, "Expected numerical value");
+
 		value_ = std::get<double>(left) <= std::get<double>(right);
 		break;
 
@@ -61,23 +86,34 @@ void Interpreter::visit(const BinaryExpression& e)
 		{
 			value_ = std::get<double>(left) + std::get<double>(right);
 		}
-		
-		if (std::holds_alternative<std::string>(left) && std::holds_alternative<std::string>(right))
+		else if (std::holds_alternative<std::string>(left) && std::holds_alternative<std::string>(right))
 		{
 			value_ = std::get<std::string>(left) + std::get<std::string>(right);
+		}
+		else
+		{
+			throw RunTimeError(e.token(), "Expected two numerical values or two strings");
 		}
 
 		break;
 
 	case TokenType::MINUS:
+		validateOperand<double>(e.token(), left, "Expected numerical value");
+		validateOperand<double>(e.token(), right, "Expected numerical value");
 		value_ = std::get<double>(left) - std::get<double>(right);
 		break;
 
 	case TokenType::STAR:
+		validateOperand<double>(e.token(), left, "Expected numerical value");
+		validateOperand<double>(e.token(), right, "Expected numerical value");
+
 		value_ = std::get<double>(left) * std::get<double>(right);
 		break;
 
 	case TokenType::SLASH:
+		validateOperand<double>(e.token(), left, "Expected numerical value");
+		validateOperand<double>(e.token(), right, "Expected numerical value");
+
 		value_ = std::get<double>(left) / std::get<double>(right);
 		break;
 	}
@@ -108,6 +144,7 @@ void Interpreter::visit(const UnaryExpression& e)
 	switch (e.token().getType())
 	{
 	case TokenType::MINUS: 
+		validateOperand<double>(e.token(), value_, "Expected numerical value");
 		value_ = -1.0 * std::get<double>(value_); 
 		break;
 
